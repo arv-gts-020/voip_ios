@@ -23,13 +23,16 @@ notification.rawPayload = {
 notification.pushType = "voip";
 notification.topic = "com.karmm.app.voip";
 
-
+/// for showing incoming call screen to the targeted device on call initiated by astro
 provider.send(notification, deviceToken).then((err, result) => {
     if (err) return console.log(JSON.stringify(err));
     return console.log(JSON.stringify(result))
 });
 
 
+
+
+/// when astro cancel dialing calling then we can call this function
 function sendCancelNotification(deviceToken, uuid) {
     let cancelNotification = new apn.Notification();
     cancelNotification.rawPayload = {
