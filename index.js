@@ -15,8 +15,9 @@ notification.rawPayload = {
     "aps": {
         "alert": {
             "uuid": "1b915738-1933-4174-8b0c-635bf2649e76",
-            "incoming_caller_id": "123456789",
-            "incoming_caller_name": "Arvindra Singh",
+            "incoming_caller_id": "instant_02UCM1718358136236gkQkK",
+            "incoming_caller_name": "Audio Call From Arvindra Singh",
+            "call_type": "video"
         }
     }
 };
@@ -56,7 +57,7 @@ function sendCancelNotification(deviceToken, uuid) {
 }
 
 // Example usage to cancel the call
-setTimeout((deviceToken) => {
+// setTimeout((deviceToken) => {
 
-    sendCancelNotification(deviceToken, "1b915738-1933-4174-8b0c-635bf2649e76");
-},10000,deviceToken);
+//     sendCancelNotification(deviceToken, "1b915738-1933-4174-8b0c-635bf2649e76");
+// },10000,deviceToken);
