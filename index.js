@@ -17,7 +17,8 @@ notification.rawPayload = {
             "uuid": "1b915738-1933-4174-8b0c-635bf2649e76",
             "incoming_caller_id": "instant_02UCM1718358136236gkQkK",
             "incoming_caller_name": "Audio Call From Arvindra Singh",
-            "call_type": "video"
+            "call_type": "video",
+            "call_status":"initiated"
         }
     }
 };
@@ -25,10 +26,10 @@ notification.pushType = "voip";
 notification.topic = "com.karmm.app.voip";
 
 /// for showing incoming call screen to the targeted device on call initiated by astro
-provider.send(notification, deviceToken).then((err, result) => {
-    if (err) return console.log(JSON.stringify(err));
-    return console.log(JSON.stringify(result))
-});
+// provider.send(notification, deviceToken).then((err, result) => {
+//     if (err) return console.log(JSON.stringify(err));
+//     return console.log(JSON.stringify(result))
+// });
 
 
 
@@ -59,5 +60,5 @@ function sendCancelNotification(deviceToken, uuid) {
 // Example usage to cancel the call
 // setTimeout((deviceToken) => {
 
-//     sendCancelNotification(deviceToken, "1b915738-1933-4174-8b0c-635bf2649e76");
+    sendCancelNotification(deviceToken, "1b915738-1933-4174-8b0c-635bf2649e76");
 // },10000,deviceToken);
