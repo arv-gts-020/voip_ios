@@ -20,6 +20,7 @@ class CallKitCenter: NSObject {
     private var provider: CXProvider?
     private var uuid = UUID()
     private(set) var uuidString: String?
+    private(set) var callStatus: String?
     private(set) var incomingCallerId: String?
     private(set) var incomingCallerName: String?
     private var isReceivedIncomingCall: Bool = false
@@ -29,6 +30,16 @@ class CallKitCenter: NSObject {
     
     var isCalleeBeforeAcceptIncomingCall: Bool {
         return self.isReceivedIncomingCall && !self.isCallConnected
+    }
+    
+    
+    var isValidCallStatus : Bool {
+        return self.callStatus == "canceled" || self.callStatus == "notconnected"
+    }
+    
+    
+    func addCallStatus(callStatus:String){
+        self.callStatus=callStatus
     }
     
     override init() {
@@ -159,6 +170,7 @@ class CallKitCenter: NSObject {
         self.answerCallAction = nil
         self.isReceivedIncomingCall = false
         self.isCallConnected = false
+        
         
         self.provider?.reportCall(with: self.uuid, endedAt: nil, reason: reason)
     }

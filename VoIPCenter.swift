@@ -108,9 +108,12 @@ extension VoIPCenter: PKPushRegistryDelegate {
         let info = self.parse(payload: payload)
         
         let callStatus = info?["call_status"] as! String
-        
+        print("🎈 CallStatus: \(callStatus)")
+        self.callKitCenter.addCallStatus(callStatus: callStatus)
         if(callStatus == "canceled"){
             self.callKitCenter.disconnected(reason: .remoteEnded)
+        }else if(callStatus=="notconnected"){
+            self.callKitCenter.disconnected(reason: .unanswered)
         }else{
             let callerName = info?["incoming_caller_name"] as! String
             self.callKitCenter.incomingCall(uuidString: info?["uuid"] as! String,
@@ -137,9 +140,15 @@ extension VoIPCenter: PKPushRegistryDelegate {
 
         let info = self.parse(payload: payload)
         let callStatus = info?["call_status"] as! String
+        print("🎈 CallStatus: \(callStatus)")
+        self.callKitCenter.addCallStatus(callStatus: callStatus)
         if(callStatus == "canceled"){
             self.callKitCenter.disconnected(reason: .remoteEnded)
-        }else{
+        }else if(callStatus=="notconnected"){
+            self.callKitCenter.disconnected(reason: .unanswered)
+        }
+        
+        else{
             let callerName = info?["incoming_caller_name"] as! String
             self.callKitCenter.incomingCall(uuidString: info?["uuid"] as! String,
                                             callerId: info?["incoming_caller_id"] as! String,
@@ -210,8 +219,13 @@ extension VoIPCenter: CXProviderDelegate {
 
     public func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
         print("❎ VoIP CXEndCallAction")
-
-        if self.callKitCenter.isCalleeBeforeAcceptIncomingCall {
+        
+        if (self.callKitCenter.isCalleeBeforeAcceptIncomingCall && !self.callKitCenter.isValidCallStatus) {
+            
+            
+            
+            
+            
             guard let incomingCallerId = self.callKitCenter.incomingCallerId else {
                 print("Error: incomingCallerId is nil")
                 return
@@ -307,60 +321,7 @@ extension VoIPCenter: CXProviderDelegate {
     }
 
     
-    func updateCallStatus(uuid: String, status: String) {
-        let url = URL(string: "https://apidev.karmm.com/api/v3/common/iosCallingCancel")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-        let parameters: [String: Any] = [
-            "roomId": uuid,
-            "status": status
-        ]
-
-        do {
-            request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted)
-        } catch let error {
-            print("Error serializing JSON: \(error.localizedDescription)")
-            return
-        }
-
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                print("Network error: \(error.localizedDescription)")
-                return
-            }
-
-            guard let httpResponse = response as? HTTPURLResponse else {
-                print("Invalid response")
-                return
-            }
-
-            if !(200...299).contains(httpResponse.statusCode) {
-                print("Server error: HTTP \(httpResponse.statusCode)")
-                return
-            }
-
-            guard let data = data else {
-                print("No data received")
-                return
-            }
-
-            do {
-                let responseJSON = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-                if let responseJSON = responseJSON {
-                    print("Response: \(responseJSON)")
-                } else {
-                    print("Failed to parse JSON response")
-                }
-            } catch let error {
-                print("Error parsing JSON response: \(error.localizedDescription)")
-            }
-        }
-
-        task.resume()
-        print("Status Updated Succesfully")
-    }
+    
 
     
     public func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
